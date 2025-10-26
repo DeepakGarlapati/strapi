@@ -54,6 +54,7 @@ We chose Strapi lifecycle hooks over alternatives like Event Hub for several rea
    - Easy upgrades
 
 ### 2.3 Service Architecture
+
 The plugin uses a centralized service architecture:
 
 1. **Core Service (`audit-log.ts`)**
@@ -114,30 +115,69 @@ interface AuditLog {
    }
    ```
 
+## 4. Performance Considerations
+
+### 4.1 Query Optimization
+- Strategic index utilization to improve lookup performance
+- Pagination to reduce response size and server load
+- Caching considered for frequently executed queries
+
+### 4.2 Storage Efficiency
+- Compression applied to JSON payloads for reduced footprint
+- Selective capture of fields to avoid unnecessary data storage
+- Routine maintenance tasks to preserve operational efficiency
+
+### 4.3 Scaling Strategy
+- Architecture supports horizontal database scaling
+- Proactive index optimization for dataset expansion
+- Option to incorporate read replicas for increased throughput
+
 ---
 
-## 🧠 Trade-offs and Reasoning
+## 5. Architectural Trade-offs
 
-| Decision | Trade-off |
-|-----------|------------|
-| Store diffs as JSON | Simpler to implement; may grow storage over time |
-| Use lifecycle hooks | Minimal intrusion but slightly harder to trace in debugging |
-| REST endpoint only | Simpler to evaluate; GraphQL could be added later |
-| One-to-one user relation | Keeps queries efficient; avoids denormalization |
-
----
-
-## 🧩 Extensibility
-- Could easily emit events to message queues (e.g., Kafka, AWS SNS)
-- Ready for future admin dashboard UI for audit review
-- Schema can evolve with additional metadata (e.g., IP, User-Agent)
+| Decision | Advantages | Trade-offs | Mitigation Strategies |
+|----------|------------|------------|----------------------|
+| Lifecycle Hooks | Immediate access to core entity lifecycle | Higher coupling to data layer | Clear integration boundaries |
+| JSON-based Storage | Flexible schema evolution | Data size growth over time | Compression and selective field logging |
+| Synchronous Logging | Ensures consistent capture | Possible latency overhead | Future batching and performance tuning |
+| REST-only API | Accessible and simple implementation | Limited querying possibilities | Future GraphQL interface planned |
 
 ---
 
-## ✅ Summary
-This design ensures:
-- **Seamless integration** into Strapi
-- **Configurable and secure** audit data collection
-- **Scalable structure** for future reporting and analytics
+## 6. Future Enhancements
 
-By centralizing logic in a dedicated plugin and leveraging Strapi’s event hooks, the system remains robust, modular, and easy to maintain.
+### 6.1 Roadmap Capabilities
+1. Real-time event notifications
+2. Enhanced querying and filtering
+3. Configurable retention and cleanup policies
+4. Long-term archival and cold storage workflows
+
+### 6.2 Integration Expansions
+- Output stream support for message queues (Kafka, RabbitMQ)
+- Integration with SIEM and log aggregation platforms
+- Reporting and analytical insights
+- Administrative UI dashboard for visual exploration
+
+---
+
+## 7. Conclusion
+
+The Strapi Audit Log plugin provides a robust foundation for tracking content modifications across the system. The current implementation demonstrates:
+
+1. **Performance Optimization**
+   - Minimal impact on primary operations
+   - Efficient retrieval and storage methodologies
+   - Scalable architecture prepared for data growth
+
+2. **Security Controls**
+   - Strong access restrictions and policy management
+   - Protection of sensitive information
+   - Adjustable governance rules
+
+3. **Maintainability and Extensibility**
+   - Clean, modular code organization
+   - Comprehensive internal documentation
+   - Designed to evolve with future enhancements
+
+The architecture remains scalable, reliable, and maintainable through the centralization of core logic in a custom plugin and the consistent application of Strapi event-driven hooks.
